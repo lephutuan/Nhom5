@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Danh sách nhân viên</title>
+  <link rel="stylesheet" href="./app.css">
+</head>
+<body>
+  <!-- Thanh Menu -->
+  <nav class="top-nav">
+    <button class="menu-btn">☰</button>
+    <div class="nav-items">
+      <span>Tổng Quan</span>
+      <span>Hàng Hóa</span>
+      <span>Giao Dịch</span>
+      <span>Đối Tác</span>
+      <span>Kho</span>
+      <span>Sổ Quỹ Thu Chi</span>
+      <span class="active">Nhân Viên</span>
+      <span>Báo Cáo</span>
+    </div>
+    <span class="cart-icon">🛒</span>
+  </nav>
+
+  <div class="container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <h3> 🔍Tìm Kiếm</h3>
+      <label>Tên<input type="text" placeholder="Nhập Tên"></label>
+      <label>Password<input type="password" placeholder="Nhập Password"></label>
+      <label>Số Điện Thoại<input type="text" placeholder="Nhập Số Điện Thoại"></label>
+      <label>Email<input type="email" placeholder="Nhập địa chỉ Email"></label>
+      <label>Trạng Thái
+        <select>
+          <option>Tất cả</option>
+        </select>
+      </label>
+      <label>Quyền Truy Cập
+        <select>
+          <option>Tất cả</option>
+        </select>
+      </label>
+      <button class="btn-search">🔍 Tìm Kiếm</button>
+    </aside>
+
+    <!-- Nội dung chính -->
+    <main class="content">
+      <h2>DANH SÁCH NHÂN VIÊN</h2>
+      <div class="btn-group">
+        <button class="btn">📤 Xuất Excel</button>
+        <button class="btn">📥 Nhập Dữ Liệu</button>
+        <button class="btn btn-create">➕ Tạo Mới</button>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>STT</th>
+            <th>Tài Khoản</th>
+            <th>TÊN</th>
+            <th>Số Điện Thoại</th>
+            <th>Quyền Truy Cập</th>
+            <th>Email</th>
+            <th>Trạng Thái</th>
+            <th>Lần Online Cuối Cùng</th>
+            <th>Hành Động</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>baongoc</td>
+            <td>Nguyễn Bảo Ngọc</td>
+            <td>0123456789</td>
+            <td>Store Admin</td>
+            <td>baongoc@gmail.com</td>
+            <td>Hoạt Động</td>
+            <td>-</td>
+            <td><button class="btn-action">Cài Đặt</button></td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>ngocbich</td>
+            <td>Nguyễn Ngọc Bích</td>
+            <td>024567894</td>
+            <td>Store Admin</td>
+            <td>ngocbich123@gmail.com</td>
+            <td>Hoạt Động</td>
+            <td>-</td>
+            <td><button class="btn-action">Cài Đặt</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </main>
+  </div>
+</body>
+</html>
