@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quản Lý Tiệm Thuốc Tự Động</title>
+    <link rel="stylesheet" href="./public/css/home.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar">
+      <div class="menu-toggle" onclick="toggleSidebar()">
+        <i class="fa-solid fa-bars"></i>
+      </div>
+      <div class="logo">
+        <a href="#">💊 PharmaCare</a>
+      </div>
+      <div class="cart">
+        <a href="#" class="cart-icon" onclick="toggleCart()">
+          <i class="fa-solid fa-cart-shopping"></i>
+        </a>
+        <div class="cart-dropdown" id="cartDropdown">
+          <div class="cart-header">Giỏ hàng (3 sản phẩm)</div>
+          <div class="cart-item">
+            <div class="item-info">
+              <div class="item-name">Paracetamol 500mg</div>
+              <div class="item-price">15.000đ</div>
+            </div>
+            <div class="item-quantity">x2</div>
+          </div>
+          <div class="cart-item">
+            <div class="item-info">
+              <div class="item-name">Vitamin C 1000mg</div>
+              <div class="item-price">25.000đ</div>
+            </div>
+            <div class="item-quantity">x1</div>
+          </div>
+          <div class="cart-item">
+            <div class="item-info">
+              <div class="item-name">Amoxicillin 250mg</div>
+              <div class="item-price">35.000đ</div>
+            </div>
+            <div class="item-quantity">x1</div>
+          </div>
+          <div class="cart-total">Tổng cộng: 90.000đ</div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <ul>
+        <li>
+          <a href="./home.html" onclick="setActive(this)">🏠 Trang chủ</a>
+        </li>
+        <li>
+          <a href="./warehouse.html" onclick="setActive(this)">📦 Kho thuốc</a>
+        </li>
+        <li>
+          <a href="./products.html" onclick="setActive(this)">📝 Đơn thuốc</a>
+        </li>
+        <li>
+          <a href="./employees.html" onclick="setActive(this)">👥 Nhân viên</a>
+        </li>
+        <li><a href="./checkout.html" onclick="setActive(this)">💳 Thanh toán</a></li>
+        <li>
+          <a href="./reports.html" onclick="setActive(this)">📈 Báo cáo & Thống kê</a>
+        </li>
+        <li>
+          <a href="./warning.html" onclick="setActive(this)">🤖 Chatbox cảnh báo</a>
+        </li>
+      </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main>
+      <div class="dashboard-header">
+        <h1>Chào mừng đến với PharmaCare</h1>
+        <p>Hệ thống quản lý tiệm thuốc tự động và hiện đại</p>
+        <img class ="img-thumbnail"src="https://cdn5.localdatacdn.com/tx/cleveland/6641070/original/AESLBfpZWP.jpg" alt="Ảnh thumnail">
+      </div>
+    </main>
+    <script src="./public/js/navbar.js"></script>
+    <script src="./public/js/sidebar.js"></script>
+  </body>
+</html>
