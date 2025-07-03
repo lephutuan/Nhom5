@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Đơn Thuốc - PharmaCare</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css.css" />
+  </head>
+  <body>
+    <div class="app">
+      <aside class="sidebar">
+        <div class="logo">🛒 PharmaCare</div>
+        <div class="profile">
+          <img src="https://i.pravatar.cc/60" alt="avatar" />
+          <span>Customer</span>
+        </div>
+      </aside>
+
+      <main class="main">
+        <h1>Đơn thuốc</h1>
+        <form class="form">
+          <div class="form-row">
+            <input type="text" placeholder="Họ tên" />
+            <input type="date" placeholder="Ngày sinh" />
+            <input type="tel" placeholder="SDT" />
+          </div>
+          <div class="form-row">
+            <input type="text" placeholder="Mã số BHYT (nếu có)" />
+            <input type="text" placeholder="CCCD" />
+            <select>
+              <option>Nam</option>
+              <option>Nữ</option>
+              <option>Khác</option>
+            </select>
+          </div>
+        </form>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Tên thuốc</th>
+              <th>Số lượng</th>
+              <th>Cách dùng</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Augmentin 625 Duo Tablet</td>
+              <td>22</td>
+              <td><input class="usage" type="text" /></td>
+            </tr>
+            <tr>
+              <td>Azithral 500 Tablet</td>
+              <td>08</td>
+              <td><input class="usage" type="text" /></td>
+            </tr>
+            <tr>
+              <td>Anapthaline Cite</td>
+              <td>14</td>
+              <td><input class="usage" type="text" /></td>
+            </tr>
+          </tbody>
+        </table>
+      </main>
+    </div>
+  </body>
+</html>
