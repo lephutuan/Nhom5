@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quản Lý Tiệm Thuốc Tự Động - Kho Hàng</title>
+    <link rel="stylesheet" href="./public/css/warehouse.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar">
+      <div class="menu-toggle" onclick="toggleSidebar()">
+        <i class="fa-solid fa-bars"></i>
+      </div>
+      <div class="logo">
+        <a href="#">💊 PharmaCare</a>
+      </div>
+      <div class="cart">
+        <a href="#" class="cart-icon" onclick="toggleCart()">
+          <i class="fa-solid fa-cart-shopping"></i>
+        </a>
+        <div class="cart-dropdown" id="cartDropdown">
+          <div class="cart-header">Giỏ hàng (3 sản phẩm)</div>
+          <div class="cart-item">
+            <div class="item-info">
+              <div class="item-name">Paracetamol 500mg</div>
+              <div class="item-price">15.000đ</div>
+            </div>
+            <div class="item-quantity">x2</div>
+          </div>
+          <div class="cart-item">
+            <div class="item-info">
+              <div class="item-name">Vitamin C 1000mg</div>
+              <div class="item-price">25.000đ</div>
+            </div>
+            <div class="item-quantity">x1</div>
+          </div>
+          <div class="cart-item">
+            <div class="item-info">
+              <div class="item-name">Amoxicillin 250mg</div>
+              <div class="item-price">35.000đ</div>
+            </div>
+            <div class="item-quantity">x1</div>
+          </div>
+          <div class="cart-total">Tổng cộng: 90.000đ</div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <ul>
+        <li>
+          <a href="./home.html" onclick="setActive(this)">🏠 Trang chủ</a>
+        </li>
+        <li>
+          <a href="./warehouse.html" onclick="setActive(this)">📦 Kho thuốc</a>
+        </li>
+        <li>
+          <a href="./products.html" onclick="setActive(this)">📝 Đơn thuốc</a>
+        </li>
+        <li>
+          <a href="./employees.html" onclick="setActive(this)">👥 Nhân viên</a>
+        </li>
+        <li><a href="./checkout.html" onclick="setActive(this)">💳 Thanh toán</a></li>
+        <li>
+          <a href="./reports.html" onclick="setActive(this)">📈 Báo cáo & Thống kê</a>
+        </li>
+        <li>
+          <a href="./warning.html" onclick="setActive(this)">🤖 Chatbox cảnh báo</a>
+        </li>
+      </ul>
+    </aside>
+
+    <!-- Main Content -->
+  <main>
+    <h1>Kho thuốc</h1>
+    <div class="warehouse-actions">
+      <button class="add-button">+ Thêm mới</button>
+      <div class="search-bar">
+        <input type="text" placeholder="Search..." />
+        <button><i class="fa fa-search"></i></button>
+      </div>
+    </div>
+
+    <div class="table-container">
+      <table class="medicine-table">
+        <thead>
+          <tr>
+            <th>Ảnh</th>
+            <th>Mã thuốc</th>
+            <th>Tên thuốc</th>
+            <th>Đơn vị</th>
+            <th>Giá nhập</th>
+            <th>Giá bán</th>
+            <th>Ngày thêm</th>
+            <th>Số lượng tối thiểu</th>
+            <th>Hạn sử dụng</th>
+            <th>Mã lô</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><img src="./public/img/paracetamol.png" alt="Paracetamol" /></td>
+            <td>#TH001</td>
+            <td>Paracetamol Tw3</td>
+            <td>Hộp</td>
+            <td>10.000 VND</td>
+            <td>15.000 VND</td>
+            <td>2025-07-03</td>
+            <td>5 hộp</td>
+            <td>2027-05-01</td>
+            <td>TW301</td>
+          </tr>
+          <tr>
+            <td><img src="./public/img/amoxicillin.jpg" alt="Amoxicillin" /></td>
+            <td>#TH002</td>
+            <td>Amoxicillin 500 mg</td>
+            <td>Vỉ</td>
+            <td>12.000 VND</td>
+            <td>18.000 VND</td>
+            <td>2025-07-03</td>
+            <td>10 vỉ</td>
+            <td>2026-11-30</td>
+            <td>AMX01</td>
+          </tr>
+          <tr>
+            <td><img src="./public/img/efferalgan.jpg" alt="Efferalgan" /></td>
+            <td>#TH003</td>
+            <td>Efferalgan Codeine</td>
+            <td>Vỉ</td>
+            <td>35.000 VND</td>
+            <td>45.000 VND</td>
+            <td>2025-07-03</td>
+            <td>5 vỉ</td>
+            <td>2026-12-31</td>
+            <td>EFC01</td>
+          </tr>
+          <tr>
+            <td><img src="./public/img/silkron.jpg" alt="Silkron" /></td>
+            <td>#TH004</td>
+            <td>Silkron 10g</td>
+            <td>Tuýp</td>
+            <td>22.000 VND</td>
+            <td>30.000 VND</td>
+            <td>2025-07-03</td>
+            <td>3 tuýp</td>
+            <td>2026-08-31</td>
+            <td>SK01</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="pagination">
+      <button disabled>&lt;</button>
+      <button class="active">1</button>
+      <button>&gt;</button>
+    </div>
+  </main>
+  </body>
+  <script src="./public/js/navbar.js"></script>
+  <script src="./public/js/sidebar.js"></script>
+</html>
