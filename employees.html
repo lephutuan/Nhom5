@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quản Lý Tiệm Thuốc Tự Động - Nhân Viên</title>
+    <link rel="stylesheet" href="./public/css/employees.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar">
+      <div class="menu-toggle" onclick="toggleSidebar()">
+        <i class="fa-solid fa-bars"></i>
+      </div>
+      <div class="logo">
+        <a href="#">💊 PharmaCare</a>
+      </div>
+      <div class="cart">
+        <a href="#" class="cart-icon" onclick="toggleCart()">
+          <i class="fa-solid fa-cart-shopping"></i>
+        </a>
+        <div class="cart-dropdown" id="cartDropdown">
+          <div class="cart-header">Giỏ hàng (3 sản phẩm)</div>
+          <div class="cart-item">
+            <div class="item-info">
+              <div class="item-name">Paracetamol 500mg</div>
+              <div class="item-price">15.000đ</div>
+            </div>
+            <div class="item-quantity">x2</div>
+          </div>
+          <div class="cart-item">
+            <div class="item-info">
+              <div class="item-name">Vitamin C 1000mg</div>
+              <div class="item-price">25.000đ</div>
+            </div>
+            <div class="item-quantity">x1</div>
+          </div>
+          <div class="cart-item">
+            <div class="item-info">
+              <div class="item-name">Amoxicillin 250mg</div>
+              <div class="item-price">35.000đ</div>
+            </div>
+            <div class="item-quantity">x1</div>
+          </div>
+          <div class="cart-total">Tổng cộng: 90.000đ</div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <ul>
+        <li>
+          <a href="./home.html" onclick="setActive(this)">🏠 Trang chủ</a>
+        </li>
+        <li>
+          <a href="./warehouse.html" onclick="setActive(this)">📦 Kho thuốc</a>
+        </li>
+        <li>
+          <a href="./products.html" onclick="setActive(this)">📝 Đơn thuốc</a>
+        </li>
+        <li>
+          <a href="./employees.html" onclick="setActive(this)">👥 Nhân viên</a>
+        </li>
+        <li><a href="./checkout.html" onclick="setActive(this)">💳 Thanh toán</a></li>
+        <li>
+          <a href="./reports.html" onclick="setActive(this)">📈 Báo cáo & Thống kê</a>
+        </li>
+        <li>
+          <a href="./warning.html" onclick="setActive(this)">🤖 Chatbox cảnh báo</a>
+        </li>
+      </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main>
+      <h1>Quản Lý Nhân Viên</h1>
+
+    <!-- Form thêm/sửa -->
+      <section class="form-section">
+        <h2>Thêm nhân viên</h2>
+        <div class="employee-form">
+          <input type="text" placeholder="Họ tên nhân viên" />
+          <select>
+            <option value="">-- Chức vụ --</option>
+            <option value="Quản lý">Quản lý</option>
+            <option value="Bán hàng">Bán hàng</option>
+          </select>
+          <input type="text" placeholder="Số điện thoại" />
+          <input type="text" placeholder="Địa chỉ" />
+          <select>
+            <option value="">-- Trạng thái --</option>
+            <option value="Đang làm">Đang làm</option>
+            <option value="Đã nghỉ">Đã nghỉ</option>
+          </select>
+          <button class="btn btn-primary">💾 Lưu</button>
+          <button class="btn btn-secondary">↩️ Xóa trắng</button>
+        </div>
+      </section>
+
+      <!-- Danh sách -->
+      <section class="form-section">
+        <h2>Danh sách nhân viên</h2>
+        <table class="employee-table">
+          <thead>
+            <tr>
+              <th>STT</th>
+              <th>Họ tên</th>
+              <th>Chức vụ</th>
+              <th>SĐT</th>
+              <th>Địa chỉ</th>
+              <th>Trạng thái</th>
+              <th>Hành động</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>Nguyễn Thị a</td>
+              <td>Bán hàng</td>
+              <td>0988123456</td>
+              <td>123 Đường Lý Thường Kiệt</td>
+              <td>Đang làm</td>
+              <td>
+                <button class="btn btn-small btn-edit">✏️</button>
+                <button class="btn btn-small btn-delete">🗑️</button>
+              </td>
+            </tr>
+            <!-- ... -->
+          </tbody>
+        </table>
+      </section>
+    </main>
+  </body>
+  <script src="./public/js/navbar.js"></script>
+  <script src="./public/js/sidebar.js"></script>
+</html>
