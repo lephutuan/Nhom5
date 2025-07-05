@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quản Lý Tiệm Thuốc Tự Động - Đối Tác</title>
+    <link rel="stylesheet" href="./public/css/warning.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar">
+      <div class="menu-toggle" onclick="toggleSidebar()">
+        <i class="fa-solid fa-bars"></i>
+      </div>
+      <div class="logo">
+        <a href="#">💊 PharmaCare</a>
+      </div>
+      <div class="cart">
+        <a href="#" class="cart-icon" onclick="toggleCart()">
+          <i class="fa-solid fa-cart-shopping"></i>
+        </a>
+        <div class="cart-dropdown" id="cartDropdown">
+          <div class="cart-header">Giỏ hàng (3 sản phẩm)</div>
+          <div class="cart-item">
+            <div class="item-info">
+              <div class="item-name">Paracetamol 500mg</div>
+              <div class="item-price">15.000đ</div>
+            </div>
+            <div class="item-quantity">x2</div>
+          </div>
+          <div class="cart-item">
+            <div class="item-info">
+              <div class="item-name">Vitamin C 1000mg</div>
+              <div class="item-price">25.000đ</div>
+            </div>
+            <div class="item-quantity">x1</div>
+          </div>
+          <div class="cart-item">
+            <div class="item-info">
+              <div class="item-name">Amoxicillin 250mg</div>
+              <div class="item-price">35.000đ</div>
+            </div>
+            <div class="item-quantity">x1</div>
+          </div>
+          <div class="cart-total">Tổng cộng: 90.000đ</div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <ul>
+        <li>
+          <a href="./home.html" onclick="setActive(this)">🏠 Trang chủ</a>
+        </li>
+        <li>
+          <a href="./products.html" onclick="setActive(this)">📦 Kho thuốc</a>
+        </li>
+        <li>
+          <a href="./checkout.html" onclick="setActive(this)">📝 Đơn thuốc</a>
+        </li>
+        <li>
+          <a href="./partners.html" onclick="setActive(this)">👥 Nhân viên</a>
+        </li>
+        <li><a href="./warehouse.html" onclick="setActive(this)">💳 Thanh toán</a></li>
+        <li>
+          <a href="./employees.html" onclick="setActive(this)">📈 Báo cáo & Thống kê</a>
+        </li>
+        <li>
+          <a href="./reports.html" onclick="setActive(this)">🤖 Chatbox cảnh báo</a>
+        </li>
+      </ul>
+    </aside>
+
+    <!-- Main Content -->
+  <main>
+    <h1>Chat box cảnh báo</h1>
+    <div class="chat-container">
+      <!-- Tin nhắn cảnh báo -->
+      <div class="chat-message bot">
+        <img src="https://icons.iconarchive.com/icons/microsoft/fluentui-emoji-3d/512/Robot-3d-icon.png" alt="Bot" class="chat-avatar" />
+        <div class="chat-content">
+          <p class="alert-title">[CẢNH BÁO - HÀNG SẮP HẾT]</p>
+          <p>
+            Tên thuốc: Paracetamol 500mg <br />
+            Mã thuốc: T001 <br />
+            Số lượng còn: 5 hộp <br />
+            Ngưỡng tồn kho: 10 hộp <br />
+            Thời gian cảnh báo: 04/07/2025 08:15 <br />
+            👉 Vui lòng kiểm tra và nhập hàng bổ sung.
+          </p>
+        </div>
+      </div>
+
+      <div class="chat-message bot">
+        <img src="https://icons.iconarchive.com/icons/microsoft/fluentui-emoji-3d/512/Robot-3d-icon.png" alt="Bot" class="chat-avatar" />
+        <div class="chat-content">
+          <p class="alert-title">[CẢNH BÁO - THUỐC SẮP HẾT HẠN]</p>
+          <p>
+            Tên thuốc: Thuốc B <br />
+            Mã thuốc: T002 <br />
+            Hạn sử dụng: 27/08/2025 <br />
+            Thời gian cảnh báo: 04/07/2025 08:10 <br />
+            👉 Vui lòng kiểm tra và tiêu thụ trước khi hết hạn.
+          </p>
+        </div>
+      </div>
+
+      <!-- Ô nhập lệnh -->
+      <div class="chat-input-container">
+        <input type="text" placeholder="Nhập nội dung..." />
+        <button class="btn-attach"><i class="fa-solid fa-paperclip"></i></button>
+        <button class="btn-send"><i class="fa-solid fa-paper-plane"></i></button>
+      </div>
+    </div>
+  </main>
+
+  </body>
+  <script src="./public/js/navbar.js"></script>
+  <script src="./public/js/sidebar.js"></script>
+</html>
