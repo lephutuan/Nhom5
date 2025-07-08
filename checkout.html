@@ -19,36 +19,6 @@
       <div class="logo">
         <a href="#">💊 PharmaCare</a>
       </div>
-      <div class="cart">
-        <a href="#" class="cart-icon" onclick="toggleCart()">
-          <i class="fa-solid fa-cart-shopping"></i>
-        </a>
-        <div class="cart-dropdown" id="cartDropdown">
-          <div class="cart-header">Giỏ hàng (3 sản phẩm)</div>
-          <div class="cart-item">
-            <div class="item-info">
-              <div class="item-name">Paracetamol 500mg</div>
-              <div class="item-price">15.000đ</div>
-            </div>
-            <div class="item-quantity">x2</div>
-          </div>
-          <div class="cart-item">
-            <div class="item-info">
-              <div class="item-name">Vitamin C 1000mg</div>
-              <div class="item-price">25.000đ</div>
-            </div>
-            <div class="item-quantity">x1</div>
-          </div>
-          <div class="cart-item">
-            <div class="item-info">
-              <div class="item-name">Amoxicillin 250mg</div>
-              <div class="item-price">35.000đ</div>
-            </div>
-            <div class="item-quantity">x1</div>
-          </div>
-          <div class="cart-total">Tổng cộng: 90.000đ</div>
-        </div>
-      </div>
     </nav>
 
     <!-- Sidebar -->
@@ -81,9 +51,9 @@
       <div class="invoice-container">
         <h1>Thanh toán hóa đơn</h1>
         <div class="invoice-details">
-          <p>Mã đơn: #DT001</p>
-          <p>Khách hàng: Nguyễn Văn A</p>
-          <p>Nhân viên: Lê Phụ Tuân</p>
+          <p>Mã đơn: </p>
+          <p>Khách hàng: </p>
+          <p>Nhân viên: </p>
         </div>
         <table class="invoice-table">
           <thead>
@@ -96,16 +66,16 @@
           </thead>
           <tbody>
             <tr>
-              <td>Paracetamol</td>
-              <td>2</td>
-              <td>20.000</td>
-              <td>40.000</td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
             </tr>
             <tr>
-              <td>Amoxicillin</td>
-              <td>1</td>
-              <td>30.000</td>
-              <td>30.000</td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
             </tr>
           </tbody>
         </table>
@@ -124,4 +94,153 @@
   </body>
   <script src="./public/js/navbar.js"></script>
   <script src="./public/js/sidebar.js"></script>
+  <script src="./backend/public/js/api.js"></script>
+  <script>
+    let donThuocList = [];
+    let selectedDonThuoc = null;
+
+    // Load dữ liệu khi trang load
+    document.addEventListener('DOMContentLoaded', async function() {
+      await loadDonThuoc();
+    });
+
+    // Load danh sách đơn thuốc chưa thanh toán
+    async function loadDonThuoc() {
+      try {
+        UI.showLoading();
+        const data = await API.getDonThuoc();
+        donThuocList = data.records.filter(don => don.da_thanh_toan === 'Chưa thanh toán');
+        displayDonThuocSelect();
+      } catch (error) {
+        UI.showMessage('Lỗi khi tải danh sách đơn thuốc: ' + error.message, 'error');
+      } finally {
+        UI.hideLoading();
+      }
+    }
+
+    // Hiển thị select đơn thuốc
+    function displayDonThuocSelect() {
+      const container = document.querySelector('.invoice-details');
+      const selectHtml = `
+        <div class="don-thuoc-select">
+          <label for="donThuocSelect">Chọn đơn thuốc:</label>
+          <select id="donThuocSelect" onchange="loadDonThuocDetails()">
+            <option value="">-- Chọn đơn thuốc --</option>
+            ${donThuocList.map(don => `
+              <option value="${don.ma_don}">Đơn #${don.ma_don} - ${don.ten_kh}</option>
+            `).join('')}
+          </select>
+        </div>
+      `;
+      
+      container.innerHTML = selectHtml + container.innerHTML;
+    }
+
+    // Load chi tiết đơn thuốc
+    async function loadDonThuocDetails() {
+      const maDon = document.getElementById('donThuocSelect').value;
+      if (!maDon) {
+        clearInvoiceDetails();
+        return;
+      }
+
+      selectedDonThuoc = donThuocList.find(don => don.ma_don == maDon);
+      if (selectedDonThuoc) {
+        updateInvoiceDetails();
+      }
+    }
+
+    // Cập nhật thông tin hóa đơn
+    function updateInvoiceDetails() {
+      const detailsDiv = document.querySelector('.invoice-details');
+      detailsDiv.innerHTML = `
+        <p>Mã đơn: #${selectedDonThuoc.ma_don}</p>
+        <p>Khách hàng: ${selectedDonThuoc.ten_kh}</p>
+        <p>Nhân viên: ${selectedDonThuoc.ten_nv}</p>
+        <p>Ngày tạo: ${UI.formatDate(selectedDonThuoc.ngay_tao)}</p>
+      `;
+
+      // Tạm thời hiển thị dữ liệu mẫu cho thuốc
+      displayInvoiceItems();
+    }
+
+    // Hiển thị danh sách thuốc trong hóa đơn
+    function displayInvoiceItems() {
+      const tbody = document.querySelector('.invoice-table tbody');
+      // Tạm thời sử dụng dữ liệu mẫu
+      tbody.innerHTML = `
+        <tr>
+          <td>Paracetamol 500mg</td>
+          <td>2</td>
+          <td>3.000đ</td>
+          <td>6.000đ</td>
+        </tr>
+        <tr>
+          <td>Amoxicillin 500mg</td>
+          <td>1</td>
+          <td>2.500đ</td>
+          <td>2.500đ</td>
+        </tr>
+      `;
+
+      // Cập nhật tổng tiền
+      document.querySelector('.total-amount').textContent = 'TỔNG CỘNG: 8.500đ';
+    }
+
+    // Xóa thông tin hóa đơn
+    function clearInvoiceDetails() {
+      const detailsDiv = document.querySelector('.invoice-details');
+      detailsDiv.innerHTML = `
+        <p>Mã đơn: --</p>
+        <p>Khách hàng: --</p>
+        <p>Nhân viên: --</p>
+      `;
+
+      const tbody = document.querySelector('.invoice-table tbody');
+      tbody.innerHTML = '';
+
+      document.querySelector('.total-amount').textContent = 'TỔNG CỘNG: 0đ';
+    }
+
+    // Xác nhận thanh toán
+    async function confirmPayment() {
+      if (!selectedDonThuoc) {
+        UI.showMessage('Vui lòng chọn đơn thuốc', 'error');
+        return;
+      }
+
+      const paymentMethod = document.querySelector('input[name="payment"]:checked').value || 'Tiền mặt';
+
+      try {
+        UI.showLoading();
+        
+        // Cập nhật trạng thái thanh toán
+        await API.updateDonThuoc(selectedDonThuoc.ma_don, {
+          ma_kh: selectedDonThuoc.ma_kh,
+          ma_nv: selectedDonThuoc.ma_nv,
+          ngay_tao: selectedDonThuoc.ngay_tao,
+          da_thanh_toan: 'Đã thanh toán'
+        });
+
+        UI.showMessage('Thanh toán thành công!', 'success');
+        
+        // Reload danh sách đơn thuốc
+        await loadDonThuoc();
+        clearInvoiceDetails();
+        
+      } catch (error) {
+        UI.showMessage('Lỗi khi thanh toán: ' + error.message, 'error');
+      } finally {
+        UI.hideLoading();
+      }
+    }
+
+    // Thêm event listener cho button xác nhận
+    document.addEventListener('DOMContentLoaded', function() {
+      const confirmBtn = document.querySelector('.btn');
+      if (confirmBtn) {
+        confirmBtn.onclick = confirmPayment;
+      }
+    });
+  </script>
 </html>

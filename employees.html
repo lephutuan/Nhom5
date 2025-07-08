@@ -19,36 +19,6 @@
       <div class="logo">
         <a href="#">💊 PharmaCare</a>
       </div>
-      <div class="cart">
-        <a href="#" class="cart-icon" onclick="toggleCart()">
-          <i class="fa-solid fa-cart-shopping"></i>
-        </a>
-        <div class="cart-dropdown" id="cartDropdown">
-          <div class="cart-header">Giỏ hàng (3 sản phẩm)</div>
-          <div class="cart-item">
-            <div class="item-info">
-              <div class="item-name">Paracetamol 500mg</div>
-              <div class="item-price">15.000đ</div>
-            </div>
-            <div class="item-quantity">x2</div>
-          </div>
-          <div class="cart-item">
-            <div class="item-info">
-              <div class="item-name">Vitamin C 1000mg</div>
-              <div class="item-price">25.000đ</div>
-            </div>
-            <div class="item-quantity">x1</div>
-          </div>
-          <div class="cart-item">
-            <div class="item-info">
-              <div class="item-name">Amoxicillin 250mg</div>
-              <div class="item-price">35.000đ</div>
-            </div>
-            <div class="item-quantity">x1</div>
-          </div>
-          <div class="cart-total">Tổng cộng: 90.000đ</div>
-        </div>
-      </div>
     </nav>
 
     <!-- Sidebar -->
@@ -84,21 +54,21 @@
       <section class="form-section">
         <h2>Thêm nhân viên</h2>
         <div class="employee-form">
-          <input type="text" placeholder="Họ tên nhân viên" />
-          <select>
+          <input type="text" id="ten_nv" placeholder="Họ tên nhân viên" />
+          <select id="chuc_vu">
             <option value="">-- Chức vụ --</option>
             <option value="Quản lý">Quản lý</option>
             <option value="Bán hàng">Bán hàng</option>
           </select>
-          <input type="text" placeholder="Số điện thoại" />
-          <input type="text" placeholder="Địa chỉ" />
-          <select>
+          <input type="text" id="sdt" placeholder="Số điện thoại" />
+          <input type="text" id="dia_chi" placeholder="Địa chỉ" />
+          <select id="trang_thai">
             <option value="">-- Trạng thái --</option>
-            <option value="Đang làm">Đang làm</option>
-            <option value="Đã nghỉ">Đã nghỉ</option>
+            <option value="Đang làm việc">Đang làm việc</option>
+            <option value="Đã nghỉ việc">Đã nghỉ việc</option>
           </select>
-          <button class="btn btn-primary">💾 Lưu</button>
-          <button class="btn btn-secondary">↩️ Xóa trắng</button>
+          <button class="btn btn-primary" onclick="saveEmployee()">💾 Lưu</button>
+          <button class="btn btn-secondary" onclick="clearForm()">↩️ Xóa trắng</button>
         </div>
       </section>
 
@@ -117,20 +87,8 @@
               <th>Hành động</th>
             </tr>
           </thead>
-          <tbody>
-            <tr>
-              <td>1</td>
-              <td>Nguyễn Thị a</td>
-              <td>Bán hàng</td>
-              <td>0988123456</td>
-              <td>123 Đường Lý Thường Kiệt</td>
-              <td>Đang làm</td>
-              <td>
-                <button class="btn btn-small btn-edit">✏️</button>
-                <button class="btn btn-small btn-delete">🗑️</button>
-              </td>
-            </tr>
-            <!-- ... -->
+          <tbody id="employeeTableBody">
+            <!-- Dữ liệu sẽ được load từ API -->
           </tbody>
         </table>
       </section>
@@ -138,4 +96,141 @@
   </body>
   <script src="./public/js/navbar.js"></script>
   <script src="./public/js/sidebar.js"></script>
+  <script src="./backend/public/js/api.js"></script>
+  <script>
+    let employees = [];
+    let editingEmployeeId = null;
+
+    // Load dữ liệu khi trang load
+    document.addEventListener('DOMContentLoaded', async function() {
+      await loadEmployees();
+    });
+
+    // Load danh sách nhân viên
+    async function loadEmployees() {
+      try {
+        UI.showLoading();
+        const data = await API.getNhanVien();
+        employees = data.records;
+        displayEmployees();
+      } catch (error) {
+        UI.showMessage('Lỗi khi tải danh sách nhân viên: ' + error.message, 'error');
+      } finally {
+        UI.hideLoading();
+      }
+    }
+
+    // Hiển thị danh sách nhân viên
+    function displayEmployees() {
+      const tbody = document.getElementById('employeeTableBody');
+      tbody.innerHTML = '';
+
+      employees.forEach((employee, index) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${index + 1}</td>
+          <td>${employee.ten_nv}</td>
+          <td>${employee.chuc_vu}</td>
+          <td>${employee.sdt}</td>
+          <td>${employee.dia_chi}</td>
+          <td>${employee.trang_thai}</td>
+          <td>
+            <button class="btn btn-small btn-edit" onclick="editEmployee(${employee.ma_nv})">✏️</button>
+            <button class="btn btn-small btn-delete" onclick="deleteEmployee(${employee.ma_nv})">🗑️</button>
+          </td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    // Lưu nhân viên
+    async function saveEmployee() {
+      const ten_nv = document.getElementById('ten_nv').value;
+      const chuc_vu = document.getElementById('chuc_vu').value;
+      const sdt = document.getElementById('sdt').value;
+      const dia_chi = document.getElementById('dia_chi').value;
+      const trang_thai = document.getElementById('trang_thai').value;
+
+      if (!ten_nv || !chuc_vu || !sdt || !dia_chi || !trang_thai) {
+        UI.showMessage('Vui lòng điền đầy đủ thông tin', 'error');
+        return;
+      }
+
+      const employeeData = {
+        ten_nv: ten_nv,
+        chuc_vu: chuc_vu,
+        sdt: sdt,
+        dia_chi: dia_chi,
+        trang_thai: trang_thai
+      };
+
+      try {
+        UI.showLoading();
+        
+        if (editingEmployeeId) {
+          // Cập nhật nhân viên
+          employeeData.ma_nv = editingEmployeeId;
+          await API.updateNhanVien(editingEmployeeId, employeeData);
+          UI.showMessage('Cập nhật nhân viên thành công!', 'success');
+        } else {
+          // Thêm nhân viên mới
+          await API.createNhanVien(employeeData);
+          UI.showMessage('Thêm nhân viên thành công!', 'success');
+        }
+
+        await loadEmployees();
+        clearForm();
+        
+      } catch (error) {
+        UI.showMessage('Lỗi: ' + error.message, 'error');
+      } finally {
+        UI.hideLoading();
+      }
+    }
+
+    // Sửa nhân viên
+    function editEmployee(ma_nv) {
+      const employee = employees.find(emp => emp.ma_nv == ma_nv);
+      if (employee) {
+        editingEmployeeId = ma_nv;
+        document.getElementById('ten_nv').value = employee.ten_nv;
+        document.getElementById('chuc_vu').value = employee.chuc_vu;
+        document.getElementById('sdt').value = employee.sdt;
+        document.getElementById('dia_chi').value = employee.dia_chi;
+        document.getElementById('trang_thai').value = employee.trang_thai;
+        
+        // Đổi text button
+        document.querySelector('.btn-primary').textContent = '💾 Cập nhật';
+      }
+    }
+
+    // Xóa nhân viên
+    async function deleteEmployee(ma_nv) {
+      if (!UI.confirmDelete('Bạn có chắc chắn muốn xóa nhân viên này?')) {
+        return;
+      }
+
+      try {
+        UI.showLoading();
+        await API.deleteNhanVien(ma_nv);
+        UI.showMessage('Xóa nhân viên thành công!', 'success');
+        await loadEmployees();
+      } catch (error) {
+        UI.showMessage('Lỗi khi xóa nhân viên: ' + error.message, 'error');
+      } finally {
+        UI.hideLoading();
+      }
+    }
+
+    // Xóa trắng form
+    function clearForm() {
+      editingEmployeeId = null;
+      document.getElementById('ten_nv').value = '';
+      document.getElementById('chuc_vu').value = '';
+      document.getElementById('sdt').value = '';
+      document.getElementById('dia_chi').value = '';
+      document.getElementById('trang_thai').value = '';
+      document.querySelector('.btn-primary').textContent = '💾 Lưu';
+    }
+  </script>
 </html>

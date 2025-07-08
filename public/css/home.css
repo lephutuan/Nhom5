@@ -40,68 +40,6 @@ body {
   padding: 0.5rem;
 }
 
-.cart {
-  position: relative;
-}
-
-.cart-icon {
-  color: #ffffff;
-  text-decoration: none;
-  font-size: 1.3rem;
-  padding: 0.8rem;
-  border-radius: 50%;
-  background: #3b82f6;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.cart-icon:hover {
-  background: #2563eb;
-}
-
-.cart-dropdown {
-  position: absolute;
-  top: 100%;
-  right: 0;
-  width: 350px;
-  background: #ffffff;
-  border-radius: 10px;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-  opacity: 0;
-  visibility: hidden;
-  transform: translateY(-10px);
-  transition: all 0.3s ease;
-  margin-top: 10px;
-  z-index: 1001;
-}
-
-.cart-dropdown.active {
-  opacity: 1;
-  visibility: visible;
-  transform: translateY(0);
-}
-
-.cart-header {
-  padding: 1rem;
-  border-bottom: 1px solid #e5e7eb;
-  font-weight: 600;
-  color: #1f2937;
-}
-
-.cart-item {
-  padding: 1rem;
-  border-bottom: 1px solid #f3f4f6;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.cart-item:last-child {
-  border-bottom: none;
-}
-
 .item-info {
   display: flex;
   flex-direction: column;

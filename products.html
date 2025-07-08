@@ -19,36 +19,6 @@
       <div class="logo">
         <a href="#">💊 PharmaCare</a>
       </div>
-      <div class="cart">
-        <a href="#" class="cart-icon" onclick="toggleCart()">
-          <i class="fa-solid fa-cart-shopping"></i>
-        </a>
-        <div class="cart-dropdown" id="cartDropdown">
-          <div class="cart-header">Giỏ hàng (3 sản phẩm)</div>
-          <div class="cart-item">
-            <div class="item-info">
-              <div class="item-name">Paracetamol 500mg</div>
-              <div class="item-price">15.000đ</div>
-            </div>
-            <div class="item-quantity">x2</div>
-          </div>
-          <div class="cart-item">
-            <div class="item-info">
-              <div class="item-name">Vitamin C 1000mg</div>
-              <div class="item-price">25.000đ</div>
-            </div>
-            <div class="item-quantity">x1</div>
-          </div>
-          <div class="cart-item">
-            <div class="item-info">
-              <div class="item-name">Amoxicillin 250mg</div>
-              <div class="item-price">35.000đ</div>
-            </div>
-            <div class="item-quantity">x1</div>
-          </div>
-          <div class="cart-total">Tổng cộng: 90.000đ</div>
-        </div>
-      </div>
     </nav>
 
     <!-- Sidebar -->
@@ -137,4 +107,233 @@
   </body>
   <script src="./public/js/navbar.js"></script>
   <script src="./public/js/sidebar.js"></script>
+  <script src="./backend/public/js/api.js"></script>
+  <script>
+    // Khởi tạo dữ liệu
+    let thuocList = [];
+    let khachHangList = [];
+    let selectedMedicines = [];
+    let selectedCustomer = null;
+
+    // Load dữ liệu khi trang load
+    document.addEventListener('DOMContentLoaded', async function() {
+      await loadData();
+      setupEventListeners();
+    });
+
+    // Load tất cả dữ liệu cần thiết
+    async function loadData() {
+      try {
+        UI.showLoading();
+        
+        const [thuocData, khachHangData] = await Promise.all([
+          API.getThuoc(),
+          API.getKhachHang()
+        ]);
+
+        thuocList = thuocData.records;
+        khachHangList = khachHangData.records;
+
+        populateCustomerSelect();
+        setupMedicineSearch();
+        
+      } catch (error) {
+        UI.showMessage('Lỗi khi tải dữ liệu: ' + error.message, 'error');
+      } finally {
+        UI.hideLoading();
+      }
+    }
+
+    // Populate customer select
+    function populateCustomerSelect() {
+      const select = document.getElementById('customerSelect');
+      select.innerHTML = '<option value="">-- Chọn khách hàng --</option>';
+      
+      khachHangList.forEach(kh => {
+        const option = document.createElement('option');
+        option.value = kh.ma_kh;
+        option.textContent = `${kh.ten_kh} - ${kh.sdt}`;
+        select.appendChild(option);
+      });
+    }
+
+    // Setup medicine search
+    function setupMedicineSearch() {
+      const searchInput = document.getElementById('medicineSearch');
+      const datalist = document.createElement('datalist');
+      datalist.id = 'medicineOptions';
+      
+      thuocList.forEach(thuoc => {
+        const option = document.createElement('option');
+        option.value = thuoc.ten_thuoc;
+        option.dataset.maThuoc = thuoc.ma_thuoc;
+        option.dataset.giaBan = thuoc.gia_ban;
+        datalist.appendChild(option);
+      });
+      
+      searchInput.setAttribute('list', 'medicineOptions');
+      document.body.appendChild(datalist);
+    }
+
+    // Setup event listeners
+    function setupEventListeners() {
+      // Customer select change
+      document.getElementById('customerSelect').addEventListener('change', function() {
+        const maKh = this.value;
+        if (maKh) {
+          selectedCustomer = khachHangList.find(kh => kh.ma_kh == maKh);
+          displayCustomerInfo(selectedCustomer);
+        } else {
+          selectedCustomer = null;
+          document.getElementById('customerInfo').innerHTML = '';
+        }
+      });
+
+      // Medicine search
+      document.getElementById('medicineSearch').addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        const filteredMedicines = thuocList.filter(thuoc => 
+          thuoc.ten_thuoc.toLowerCase().includes(searchTerm)
+        );
+        
+        if (filteredMedicines.length === 1) {
+          const thuoc = filteredMedicines[0];
+          this.dataset.selectedMaThuoc = thuoc.ma_thuoc;
+          this.dataset.selectedGiaBan = thuoc.gia_ban;
+        }
+      });
+    }
+
+    // Display customer info
+    function displayCustomerInfo(customer) {
+      const infoDiv = document.getElementById('customerInfo');
+      infoDiv.innerHTML = `
+        <div class="customer-details">
+          <p><strong>Tên:</strong> ${customer.ten_kh}</p>
+          <p><strong>SĐT:</strong> ${customer.sdt}</p>
+          <p><strong>Dị ứng:</strong> ${customer.di_ung}</p>
+        </div>
+      `;
+    }
+
+    // Add medicine to prescription
+    function addMedicine() {
+      const searchInput = document.getElementById('medicineSearch');
+      const doseInput = document.getElementById('dose');
+      const daysInput = document.getElementById('days');
+      const quantityInput = document.getElementById('quantity');
+
+      const maThuoc = searchInput.dataset.selectedMaThuoc;
+      const tenThuoc = searchInput.value;
+      const lieuLuong = doseInput.value;
+      const soNgay = parseInt(daysInput.value);
+      const soLuong = parseInt(quantityInput.value);
+
+      if (!maThuoc || !lieuLuong || !soNgay || !soLuong) {
+        UI.showMessage('Vui lòng điền đầy đủ thông tin thuốc', 'error');
+        return;
+      }
+
+      const medicine = {
+        ma_thuoc: maThuoc,
+        ten_thuoc: tenThuoc,
+        lieu_luong: lieuLuong,
+        so_ngay: soNgay,
+        so_luong: soLuong
+      };
+
+      selectedMedicines.push(medicine);
+      displayMedicineList();
+      clearMedicineForm();
+    }
+
+    // Display medicine list
+    function displayMedicineList() {
+      const tbody = document.getElementById('medicineList');
+      tbody.innerHTML = '';
+
+      selectedMedicines.forEach((medicine, index) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${index + 1}</td>
+          <td>${medicine.ten_thuoc}</td>
+          <td>${medicine.lieu_luong}</td>
+          <td>${medicine.so_ngay}</td>
+          <td>${medicine.so_luong}</td>
+          <td><button onclick="removeMedicine(${index})" class="btn btn-danger btn-sm">Xóa</button></td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    // Remove medicine
+    function removeMedicine(index) {
+      selectedMedicines.splice(index, 1);
+      displayMedicineList();
+    }
+
+    // Clear medicine form
+    function clearMedicineForm() {
+      document.getElementById('medicineSearch').value = '';
+      document.getElementById('dose').value = '';
+      document.getElementById('days').value = '';
+      document.getElementById('quantity').value = '';
+      delete document.getElementById('medicineSearch').dataset.selectedMaThuoc;
+      delete document.getElementById('medicineSearch').dataset.selectedGiaBan;
+    }
+
+    // Submit prescription
+    async function submitPrescription() {
+      if (!selectedCustomer) {
+        UI.showMessage('Vui lòng chọn khách hàng', 'error');
+        return;
+      }
+
+      if (selectedMedicines.length === 0) {
+        UI.showMessage('Vui lòng thêm ít nhất một loại thuốc', 'error');
+        return;
+      }
+
+      try {
+        UI.showLoading();
+
+        // Tạo đơn thuốc
+        const donThuocData = {
+          ma_kh: selectedCustomer.ma_kh,
+          ma_nv: 1, // Tạm thời hardcode, sau này sẽ lấy từ session
+          ngay_tao: new Date().toISOString().slice(0, 19).replace('T', ' '),
+          da_thanh_toan: 'Chưa thanh toán'
+        };
+
+        const response = await API.createDonThuoc(donThuocData);
+        
+        if (response.ma_don) {
+          UI.showMessage('Đơn thuốc đã được tạo thành công!', 'success');
+          resetForm();
+        }
+
+      } catch (error) {
+        UI.showMessage('Lỗi khi tạo đơn thuốc: ' + error.message, 'error');
+      } finally {
+        UI.hideLoading();
+      }
+    }
+
+    // Cancel prescription
+    function cancelPrescription() {
+      if (confirm('Bạn có chắc chắn muốn hủy đơn thuốc này?')) {
+        resetForm();
+      }
+    }
+
+    // Reset form
+    function resetForm() {
+      selectedCustomer = null;
+      selectedMedicines = [];
+      document.getElementById('customerSelect').value = '';
+      document.getElementById('customerInfo').innerHTML = '';
+      document.getElementById('medicineList').innerHTML = '';
+      clearMedicineForm();
+    }
+  </script>
 </html>

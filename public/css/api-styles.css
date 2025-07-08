@@ -1,0 +1,290 @@
+/* Loading Spinner */
+#loader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Alert Messages */
+.alert {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 15px 20px;
+  border-radius: 5px;
+  color: white;
+  font-weight: bold;
+  z-index: 10000;
+  max-width: 300px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  animation: slideIn 0.3s ease-out;
+}
+
+/* Thông báo thành công */
+.alert-success {
+  color: #155724;
+  background-color: #d4edda;
+  border: 1px solid #c3e6cb;
+  padding: 12px 20px;
+  border-radius: 4px;
+  margin-bottom: 16px;
+  font-weight: 500;
+  opacity: 1;
+  transition: opacity 0.8s ease;
+}
+
+/* Thông báo thất bại */
+.alert-error {
+  color: #721c24;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  padding: 12px 20px;
+  border-radius: 4px;
+  margin-bottom: 16px;
+  font-weight: 500;
+  opacity: 1;
+  transition: opacity 0.8s ease;
+}
+
+.alert-info {
+  background-color: #17a2b8;
+  border-left: 4px solid #117a8b;
+}
+
+.alert-warning {
+  background-color: #ffc107;
+  border-left: 4px solid #e0a800;
+  color: #212529;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Ẩn thông báo (dùng để fade out) */
+.alert-hide {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Form Styles */
+.form-section {
+  margin-bottom: 30px;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+}
+
+.form-section h2 {
+  margin-bottom: 20px;
+  color: #495057;
+  font-size: 1.5rem;
+}
+
+/* Button Styles */
+.btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-block;
+  margin: 5px;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;
+}
+
+.btn-secondary {
+  background-color: #6c757d;
+  color: white;
+}
+
+.btn-secondary:hover {
+  background-color: #545b62;
+}
+
+.btn-success {
+  background-color: #28a745;
+  color: white;
+}
+
+.btn-success:hover {
+  background-color: #1e7e34;
+}
+
+.btn-danger {
+  background-color: #dc3545;
+  color: white;
+}
+
+.btn-danger:hover {
+  background-color: #c82333;
+}
+
+.btn-sm {
+  padding: 5px 10px;
+  font-size: 12px;
+}
+
+/* Table Styles */
+.medicine-table,
+.employee-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.medicine-table th,
+.medicine-table td,
+.employee-table th,
+.employee-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.medicine-table th,
+.employee-table th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  color: #495057;
+}
+
+.medicine-table tr:hover,
+.employee-table tr:hover {
+  background-color: #f8f9fa;
+}
+
+/* Input Styles */
+input[type="text"],
+input[type="number"],
+input[type="date"],
+select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+input[type="date"]:focus,
+select:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+/* Customer Info Styles */
+.customer-details {
+  background: #e9ecef;
+  padding: 15px;
+  border-radius: 5px;
+  margin-top: 10px;
+}
+
+.customer-details p {
+  margin: 5px 0;
+  color: #495057;
+}
+
+/* Medicine Form Styles */
+.medicine-form {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr auto;
+  gap: 10px;
+  align-items: end;
+}
+
+.employee-form {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 2fr 1fr auto auto;
+  gap: 10px;
+  align-items: end;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .medicine-form,
+  .employee-form {
+    grid-template-columns: 1fr;
+  }
+  
+  .alert {
+    max-width: 90%;
+    right: 5%;
+  }
+  
+  .btn {
+    width: 100%;
+    margin: 5px 0;
+  }
+}
+
+/* Don Thuoc Select Styles */
+.don-thuoc-select {
+  margin-bottom: 20px;
+  padding: 15px;
+  background: #e9ecef;
+  border-radius: 5px;
+}
+
+.don-thuoc-select label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 600;
+  color: #495057;
+}
+
+.don-thuoc-select select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 14px;
+} 
