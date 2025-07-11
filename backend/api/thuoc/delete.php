@@ -18,8 +18,19 @@ $db = $database->getConnection();
 
 $thuoc = new Thuoc($db);
 
-$ma_thuoc = isset($_GET['id']) ? $_GET['id'] : die();
-
+// Nhận ma_thuoc từ POST (JSON hoặc form)
+$input = json_decode(file_get_contents('php://input'), true);
+if (isset($input['ma_thuoc'])) {
+    $ma_thuoc = $input['ma_thuoc'];
+} elseif (isset($_POST['ma_thuoc'])) {
+    $ma_thuoc = $_POST['ma_thuoc'];
+} elseif (isset($_GET['id'])) {
+    $ma_thuoc = $_GET['id'];
+} else {
+    http_response_code(400);
+    echo json_encode(array("message" => "Thiếu mã thuốc để xóa."));
+    exit();
+}
 $thuoc->ma_thuoc = $ma_thuoc;
 
 if($thuoc->delete()) {

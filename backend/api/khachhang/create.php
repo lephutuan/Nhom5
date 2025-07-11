@@ -20,22 +20,24 @@ $khachhang = new KhachHang($db);
 
 $data = json_decode(file_get_contents("php://input"));
 
-if(!empty($data->ten_kh) && !empty($data->ngay_sinh) && !empty($data->sdt) && !empty($data->dia_chi)) {
+if(!empty($data->ten_kh) && !empty($data->sdt)) {
     $khachhang->ten_kh = $data->ten_kh;
-    $khachhang->ngay_sinh = $data->ngay_sinh;
     $khachhang->sdt = $data->sdt;
-    $khachhang->dia_chi = $data->dia_chi;
-    $khachhang->di_ung = $data->di_ung ?? 'Không có';
+    $khachhang->ngay_sinh = $data->ngay_sinh ?? null;
+    $khachhang->dia_chi = $data->dia_chi ?? null;
+    $khachhang->di_ung = $data->di_ung ?? null;
 
     if($khachhang->create()) {
+        // Lấy mã khách hàng vừa tạo
+        $ma_kh = $db->lastInsertId();
         http_response_code(201);
-        echo json_encode(array("message" => "Khách hàng đã được tạo thành công."));
+        echo json_encode(array("message" => "Khách hàng đã được tạo thành công.", "ma_kh" => $ma_kh));
     } else {
         http_response_code(503);
         echo json_encode(array("message" => "Không thể tạo khách hàng."));
     }
 } else {
     http_response_code(400);
-    echo json_encode(array("message" => "Không thể tạo khách hàng. Dữ liệu không đầy đủ."));
+    echo json_encode(array("message" => "Không thể tạo khách hàng. Vui lòng nhập tên và số điện thoại."));
 }
 ?> 

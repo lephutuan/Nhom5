@@ -58,7 +58,15 @@
           <option value="">-- Chọn khách hàng --</option>
           <!-- Các option sẽ được render từ JS -->
         </select>
-        <button class="btn btn-secondary">+ Thêm khách hàng mới</button>
+        <button class="btn btn-secondary" id="btnAddCustomer">+ Thêm khách hàng mới</button>
+        <!-- Form thêm khách hàng mới, ẩn mặc định -->
+        <div id="addCustomerForm" style="display:none; gap: 8px; align-items: center; margin-top: 8px;">
+          <input type="text" id="newCustomerName" placeholder="Tên khách hàng" style="width: 180px;" />
+          <input type="text" id="newCustomerPhone" placeholder="SĐT" style="width: 120px;" />
+          <input type="text" id="newCustomerAllergy" placeholder="Dị ứng (nếu có)" style="width: 180px;" />
+          <button class="btn btn-primary" id="btnSaveCustomer"><i class="fa fa-save"></i> Lưu</button>
+          <button class="btn btn-danger" id="btnCancelAddCustomer"><i class="fa fa-times"></i> Hủy</button>
+        </div>
         <div class="customer-info" id="customerInfo">
           <!-- Tên, sđt, dị ứng sẽ hiển thị tại đây -->
         </div>
@@ -186,6 +194,54 @@
         } else {
           selectedCustomer = null;
           document.getElementById('customerInfo').innerHTML = '';
+        }
+      });
+
+      // Nút thêm khách hàng mới
+      document.getElementById('btnAddCustomer').addEventListener('click', function() {
+        this.style.display = 'none';
+        document.getElementById('addCustomerForm').style.display = 'flex';
+      });
+      // Nút hủy thêm khách hàng mới
+      document.getElementById('btnCancelAddCustomer').addEventListener('click', function() {
+        document.getElementById('addCustomerForm').style.display = 'none';
+        document.getElementById('btnAddCustomer').style.display = 'inline-block';
+        document.getElementById('newCustomerName').value = '';
+        document.getElementById('newCustomerPhone').value = '';
+        document.getElementById('newCustomerAllergy').value = '';
+      });
+      // Nút lưu khách hàng mới
+      document.getElementById('btnSaveCustomer').addEventListener('click', async function() {
+        const ten_kh = document.getElementById('newCustomerName').value.trim();
+        const sdt = document.getElementById('newCustomerPhone').value.trim();
+        const di_ung = document.getElementById('newCustomerAllergy').value.trim();
+        if (!ten_kh || !sdt) {
+          UI.showMessage('Vui lòng nhập tên và số điện thoại khách hàng!', 'error');
+          return;
+        }
+        try {
+          UI.showLoading();
+          // Gọi API tạo khách hàng mới
+          const res = await API.createKhachHang({ ten_kh, sdt, di_ung });
+          if (res && res.ma_kh) {
+            khachHangList.push({ ma_kh: res.ma_kh, ten_kh, sdt, di_ung });
+            populateCustomerSelect();
+            document.getElementById('customerSelect').value = res.ma_kh;
+            selectedCustomer = khachHangList.find(kh => kh.ma_kh == res.ma_kh);
+            displayCustomerInfo(selectedCustomer);
+            document.getElementById('addCustomerForm').style.display = 'none';
+            document.getElementById('btnAddCustomer').style.display = 'inline-block';
+            document.getElementById('newCustomerName').value = '';
+            document.getElementById('newCustomerPhone').value = '';
+            document.getElementById('newCustomerAllergy').value = '';
+            UI.showMessage('Đã thêm khách hàng mới!', 'success');
+          } else {
+            throw new Error('Không thể thêm khách hàng mới!');
+          }
+        } catch (err) {
+          UI.showMessage('Lỗi khi thêm khách hàng mới: ' + err.message, 'error');
+        } finally {
+          UI.hideLoading();
         }
       });
 

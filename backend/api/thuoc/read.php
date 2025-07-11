@@ -17,7 +17,7 @@ $db = $database->getConnection();
 
 $thuoc = new Thuoc($db);
 
-$stmt = $thuoc->read();
+$stmt = $thuoc->readWithLot();
 $num = $stmt->rowCount();
 
 if($num > 0) {
@@ -34,7 +34,11 @@ if($num > 0) {
             "gia_nhap" => $gia_nhap,
             "gia_ban" => $gia_ban,
             "ngay_them" => $ngay_them,
-            "sl_toi_thieu" => $sl_toi_thieu
+            "sl_toi_thieu" => $sl_toi_thieu,
+            "anh" => $anh,
+            "ma_lo" => $ma_lo,
+            "han_su_dung" => $han_su_dung,
+            "trang_thai" => $trang_thai
         );
 
         array_push($thuoc_arr["records"], $thuoc_item);

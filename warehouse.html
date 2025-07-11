@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Quản Lý Tiệm Thuốc Tự Động - Kho Hàng</title>
-    <link rel="stylesheet" href="./public/css/warehouse.css" />
+    <link rel="stylesheet" href="./public/css/warehouse.css?v=1.1" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
@@ -52,8 +52,8 @@
     <div class="warehouse-actions">
       <button class="add-button">+ Thêm mới</button>
       <div class="search-bar">
-        <input type="text" placeholder="Search..." />
-        <button><i class="fa fa-search"></i></button>
+        <input type="text" id="warehouseSearchInput" placeholder="Search..." />
+        <button id="warehouseSearchBtn"><i class="fa fa-search"></i></button>
       </div>
     </div>
 
@@ -71,68 +71,485 @@
             <th>Số lượng tối thiểu</th>
             <th>Hạn sử dụng</th>
             <th>Mã lô</th>
+            <th>Thao tác</th>
           </tr>
         </thead>
-        <tbody>
-          <tr>
-            <td><img src="./public/img/paracetamol.png" alt="Paracetamol" /></td>
-            <td>#TH001</td>
-            <td>Paracetamol Tw3</td>
-            <td>Hộp</td>
-            <td>10.000 VND</td>
-            <td>15.000 VND</td>
-            <td>2025-07-03</td>
-            <td>5 hộp</td>
-            <td>2027-05-01</td>
-            <td>TW301</td>
-          </tr>
-          <tr>
-            <td><img src="./public/img/amoxicillin.jpg" alt="Amoxicillin" /></td>
-            <td>#TH002</td>
-            <td>Amoxicillin 500 mg</td>
-            <td>Vỉ</td>
-            <td>12.000 VND</td>
-            <td>18.000 VND</td>
-            <td>2025-07-03</td>
-            <td>10 vỉ</td>
-            <td>2026-11-30</td>
-            <td>AMX01</td>
-          </tr>
-          <tr>
-            <td><img src="./public/img/efferalgan.jpg" alt="Efferalgan" /></td>
-            <td>#TH003</td>
-            <td>Efferalgan Codeine</td>
-            <td>Vỉ</td>
-            <td>35.000 VND</td>
-            <td>45.000 VND</td>
-            <td>2025-07-03</td>
-            <td>5 vỉ</td>
-            <td>2026-12-31</td>
-            <td>EFC01</td>
-          </tr>
-          <tr>
-            <td><img src="./public/img/silkron.jpg" alt="Silkron" /></td>
-            <td>#TH004</td>
-            <td>Silkron 10g</td>
-            <td>Tuýp</td>
-            <td>22.000 VND</td>
-            <td>30.000 VND</td>
-            <td>2025-07-03</td>
-            <td>3 tuýp</td>
-            <td>2026-08-31</td>
-            <td>SK01</td>
-          </tr>
+        <tbody id="warehouseTableBody">
+          <!-- Dữ liệu sẽ được load từ API -->
         </tbody>
       </table>
     </div>
+    <div class="pagination" id="warehousePagination"></div>
 
-    <div class="pagination">
-      <button disabled>&lt;</button>
-      <button class="active">1</button>
-      <button>&gt;</button>
+    <!-- Modal thêm thuốc mới -->
+    <div id="addMedicineModal" class="modal" style="display: none;">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Thêm thuốc mới</h2>
+          <span class="close" onclick="closeModal()">&times;</span>
+        </div>
+        <div class="modal-body">
+          <form id="addMedicineForm">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="medicineImage">Ảnh:</label>
+                <input type="file" id="medicineImage" accept="image/*" />
+              </div>
+              <div class="form-group">
+                <label for="medicineCode">Mã thuốc:</label>
+                <input type="text" id="medicineCode" placeholder="Nhập mã thuốc" />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="medicineName">Tên thuốc:</label>
+                <input type="text" id="medicineName" placeholder="Nhập tên thuốc" />
+              </div>
+              <div class="form-group">
+                <label for="medicineUnit">Đơn vị:</label>
+                <input type="text" id="medicineUnit" placeholder="Nhập đơn vị" />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="importPrice">Giá nhập:</label>
+                <input type="number" id="importPrice" placeholder="Nhập giá nhập" />
+              </div>
+              <div class="form-group">
+                <label for="salePrice">Giá bán:</label>
+                <input type="number" id="salePrice" placeholder="Nhập giá bán" />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="addDate">Ngày thêm:</label>
+                <input type="date" id="addDate" />
+              </div>
+              <div class="form-group">
+                <label for="minQuantity">Số lượng tối thiểu:</label>
+                <input type="number" id="minQuantity" placeholder="Nhập số lượng tối thiểu" />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="expiryDate">Hạn sử dụng:</label>
+                <input type="date" id="expiryDate" />
+              </div>
+              <div class="form-group">
+                <label for="batchCode">Mã lô:</label>
+                <input type="text" id="batchCode" placeholder="Nhập mã lô" />
+              </div>
+            </div>
+            <div class="form-actions">
+              <button type="button" class="btn btn-primary" onclick="saveMedicine()">Lưu</button>
+              <button type="button" class="btn btn-secondary" onclick="closeModal()">Hủy</button>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
-  </main>
+
+    <!-- Modal chỉnh sửa thuốc -->
+    <div id="editMedicineModal" class="modal" style="display: none;">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Chỉnh sửa thuốc</h2>
+          <span class="close" onclick="closeEditModal()">&times;</span>
+        </div>
+        <div class="modal-body">
+          <form id="editMedicineForm">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="editMedicineImage">Ảnh:</label>
+                <input type="file" id="editMedicineImage" accept="image/*" />
+              </div>
+              <div class="form-group">
+                <label for="editMedicineCode">Mã thuốc:</label>
+                <input type="text" id="editMedicineCode" placeholder="Nhập mã thuốc" />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="editMedicineName">Tên thuốc:</label>
+                <input type="text" id="editMedicineName" placeholder="Nhập tên thuốc" />
+              </div>
+              <div class="form-group">
+                <label for="editMedicineUnit">Đơn vị:</label>
+                <input type="text" id="editMedicineUnit" placeholder="Nhập đơn vị" />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="editImportPrice">Giá nhập:</label>
+                <input type="number" id="editImportPrice" placeholder="Nhập giá nhập" />
+              </div>
+              <div class="form-group">
+                <label for="editSalePrice">Giá bán:</label>
+                <input type="number" id="editSalePrice" placeholder="Nhập giá bán" />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="editAddDate">Ngày thêm:</label>
+                <input type="date" id="editAddDate" />
+              </div>
+              <div class="form-group">
+                <label for="editMinQuantity">Số lượng tối thiểu:</label>
+                <input type="number" id="editMinQuantity" placeholder="Nhập số lượng tối thiểu" />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="editExpiryDate">Hạn sử dụng:</label>
+                <input type="date" id="editExpiryDate" />
+              </div>
+              <div class="form-group">
+                <label for="editBatchCode">Mã lô:</label>
+                <input type="text" id="editBatchCode" placeholder="Nhập mã lô" />
+              </div>
+            </div>
+            <div class="form-actions">
+              <button type="button" class="btn btn-primary" onclick="updateMedicine()">Lưu</button>
+              <button type="button" class="btn btn-secondary" onclick="closeEditModal()">Hủy</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
   </body>
   <script src="./public/js/navbar.js"></script>
   <script src="./public/js/sidebar.js"></script>
+  <script src="./backend/public/js/api.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const searchInput = document.getElementById('warehouseSearchInput');
+      const tableBody = document.getElementById('warehouseTableBody');
+      
+      // Biến quản lý phân trang
+      let allMedicines = [];
+      let currentPage = 1;
+      const itemsPerPage = 10; // Hiển thị 10 dòng mỗi trang
+      
+      // Load dữ liệu thuốc từ API khi trang load
+      loadMedicineData();
+
+      searchInput.addEventListener('input', function() {
+        const keyword = this.value.trim().toLowerCase();
+        const rows = tableBody.querySelectorAll('tr');
+        rows.forEach(row => {
+          const text = row.textContent.toLowerCase();
+          if (text.includes(keyword)) {
+            row.style.display = '';
+          } else {
+            row.style.display = 'none';
+          }
+        });
+      });
+
+      // Xử lý modal thêm thuốc
+      document.querySelector('.add-button').addEventListener('click', function() {
+        document.getElementById('addMedicineModal').style.display = 'block';
+      });
+
+      function loadMedicineData() {
+        // Hiển thị loading
+        tableBody.innerHTML = '<tr><td colspan="11" style="text-align: center; padding: 20px;">Đang tải dữ liệu...</td></tr>';
+        
+        // Gọi API lấy dữ liệu thuốc
+        fetch('./backend/api/thuoc/read.php')
+          .then(response => {
+            console.log('Response status:', response.status);
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+          })
+          .then(data => {
+            console.log('API response:', data);
+            console.log('Số lượng thuốc từ API:', data.records ? data.records.length : 0);
+            if (data.records && data.records.length > 0) {
+              allMedicines = data.records;
+              displayMedicineData();
+              updatePagination();
+              console.log('Đã hiển thị', data.records.length, 'dòng thuốc');
+            } else {
+              tableBody.innerHTML = '<tr><td colspan="11" style="text-align: center; padding: 20px;">Không có dữ liệu thuốc</td></tr>';
+            }
+          })
+          .catch(error => {
+            console.error('Lỗi khi tải dữ liệu:', error);
+            tableBody.innerHTML = '<tr><td colspan="11" style="text-align: center; padding: 20px; color: red;">Lỗi khi tải dữ liệu: ' + error.message + '</td></tr>';
+          });
+      }
+
+      function displayMedicineData() {
+        tableBody.innerHTML = '';
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = Math.min(startIndex + itemsPerPage, allMedicines.length);
+        const medicinesToShow = allMedicines.slice(startIndex, endIndex);
+        medicinesToShow.forEach((medicine, index) => {
+          const row = document.createElement('tr');
+          
+          // Xử lý ảnh từ database
+          let imageSrc = './public/img/placeholder.png'; // ảnh mặc định
+          if (medicine.anh && medicine.anh !== 'placeholder.png') {
+            imageSrc = `./public/img/${medicine.anh}`;
+          }
+          
+          // Xử lý hạn sử dụng và mã lô
+          const hanSuDung = medicine.han_su_dung || 'N/A';
+          const maLo = medicine.ma_lo || 'N/A';
+          
+          row.innerHTML = `
+            <td><img src="${imageSrc}" alt="${medicine.ten_thuoc}" onerror="this.src='./public/img/placeholder.png'" style="width: 50px; height: 50px; object-fit: cover;" /></td>
+            <td>#${medicine.ma_thuoc.toString().padStart(3, '0')}</td>
+            <td>${medicine.ten_thuoc}</td>
+            <td>${medicine.don_vi}</td>
+            <td>${parseInt(medicine.gia_nhap).toLocaleString()} VND</td>
+            <td>${parseInt(medicine.gia_ban).toLocaleString()} VND</td>
+            <td>${medicine.ngay_them}</td>
+            <td>${medicine.sl_toi_thieu}</td>
+            <td>${hanSuDung}</td>
+            <td>${maLo}</td>
+            <td>
+              <button class="btn btn-primary btn-sm" onclick="editMedicine(this)">Sửa</button>
+              <button class="btn btn-danger btn-sm" onclick="deleteMedicine(this)">Xóa</button>
+            </td>
+          `;
+          tableBody.appendChild(row);
+        });
+        // Nếu không có thuốc nào trên trang này
+        if (medicinesToShow.length === 0) {
+          tableBody.innerHTML = '<tr><td colspan="11" style="text-align: center; padding: 20px;">Không có dữ liệu thuốc</td></tr>';
+        }
+      }
+
+      function updatePagination() {
+        const totalPages = Math.ceil(allMedicines.length / itemsPerPage) || 1;
+        const pagination = document.getElementById('warehousePagination');
+        pagination.innerHTML = '';
+        // Nút Previous
+        const prevBtn = document.createElement('button');
+        prevBtn.textContent = '<';
+        prevBtn.disabled = currentPage === 1;
+        prevBtn.onclick = () => {
+          if (currentPage > 1) {
+            currentPage--;
+            displayMedicineData();
+            updatePagination();
+          }
+        };
+        pagination.appendChild(prevBtn);
+        // Các nút số trang
+        for (let i = 1; i <= totalPages; i++) {
+          const pageBtn = document.createElement('button');
+          pageBtn.textContent = i;
+          pageBtn.className = i === currentPage ? 'active' : '';
+          pageBtn.onclick = () => {
+            currentPage = i;
+            displayMedicineData();
+            updatePagination();
+          };
+          pagination.appendChild(pageBtn);
+        }
+        // Nút Next
+        const nextBtn = document.createElement('button');
+        nextBtn.textContent = '>';
+        nextBtn.disabled = currentPage === totalPages;
+        nextBtn.onclick = () => {
+          if (currentPage < totalPages) {
+            currentPage++;
+            displayMedicineData();
+            updatePagination();
+          }
+        };
+        pagination.appendChild(nextBtn);
+      }
+
+      function closeModal() {
+        document.getElementById('addMedicineModal').style.display = 'none';
+        document.getElementById('addMedicineForm').reset();
+      }
+
+      function saveMedicine() {
+        const medicineName = document.getElementById('medicineName').value;
+        const medicineUnit = document.getElementById('medicineUnit').value;
+        const importPrice = document.getElementById('importPrice').value;
+        const salePrice = document.getElementById('salePrice').value;
+        const minQuantity = document.getElementById('minQuantity').value;
+        const imageFile = document.getElementById('medicineImage').files[0];
+        const batchCode = document.getElementById('batchCode').value;
+        const expiryDate = document.getElementById('expiryDate').value;
+        const addDate = document.getElementById('addDate').value;
+        const soLuongLo = document.getElementById('soLuongLo') ? document.getElementById('soLuongLo').value : '';
+        const trangThai = 'Còn hạn';
+
+        if (!medicineName || !medicineUnit || !importPrice || !salePrice) {
+          alert('Vui lòng điền đầy đủ thông tin bắt buộc!');
+          return;
+        }
+
+        const formData = new FormData();
+        formData.append('ten_thuoc', medicineName);
+        formData.append('don_vi', medicineUnit);
+        formData.append('gia_nhap', importPrice);
+        formData.append('gia_ban', salePrice);
+        formData.append('sl_toi_thieu', minQuantity || 10);
+        if (imageFile) formData.append('anh', imageFile);
+        formData.append('ma_lo', batchCode);
+        formData.append('han_su_dung', expiryDate);
+        formData.append('ngay_nhap', addDate);
+        formData.append('so_luong', soLuongLo);
+        formData.append('trang_thai', trangThai);
+
+        fetch('./backend/api/thuoc/create.php', {
+          method: 'POST',
+          body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.message && data.message.includes('thành công')) {
+            alert('Đã thêm thuốc mới thành công!');
+            closeModal();
+            loadMedicineData();
+          } else {
+            alert('Lỗi khi thêm thuốc: ' + (data.message || 'Không rõ nguyên nhân'));
+          }
+        })
+        .catch(err => {
+          alert('Lỗi khi thêm thuốc: ' + err.message);
+        });
+      }
+
+      // Đóng modal khi click bên ngoài
+      window.onclick = function(event) {
+        const modal = document.getElementById('addMedicineModal');
+        if (event.target == modal) {
+          closeModal();
+        }
+      }
+
+      // Đưa các function ra global scope để onclick có thể gọi được
+      window.closeModal = closeModal;
+      window.saveMedicine = saveMedicine;
+      window.editMedicine = editMedicine;
+      window.closeEditModal = closeEditModal;
+      window.updateMedicine = updateMedicine;
+      window.deleteMedicine = deleteMedicine;
+
+      // Function chỉnh sửa thuốc
+      function editMedicine(button) {
+        const row = button.closest('tr');
+        const cells = row.cells;
+        
+        // Lấy dữ liệu từ dòng hiện tại
+        const medicineCode = cells[1].textContent;
+        const medicineName = cells[2].textContent;
+        const medicineUnit = cells[3].textContent;
+        const importPrice = cells[4].textContent.replace(' VND', '').replace(/,/g, '');
+        const salePrice = cells[5].textContent.replace(' VND', '').replace(/,/g, '');
+        const addDate = cells[6].textContent === 'N/A' ? '' : cells[6].textContent;
+        const minQuantity = cells[7].textContent === 'N/A' ? '' : cells[7].textContent;
+        const expiryDate = cells[8].textContent === 'N/A' ? '' : cells[8].textContent;
+        const batchCode = cells[9].textContent === 'N/A' ? '' : cells[9].textContent;
+
+        // Điền dữ liệu vào form chỉnh sửa
+        document.getElementById('editMedicineCode').value = medicineCode;
+        document.getElementById('editMedicineName').value = medicineName;
+        document.getElementById('editMedicineUnit').value = medicineUnit;
+        document.getElementById('editImportPrice').value = importPrice;
+        document.getElementById('editSalePrice').value = salePrice;
+        document.getElementById('editAddDate').value = addDate;
+        document.getElementById('editMinQuantity').value = minQuantity;
+        document.getElementById('editExpiryDate').value = expiryDate;
+        document.getElementById('editBatchCode').value = batchCode;
+
+        // Lưu reference đến dòng đang chỉnh sửa
+        window.editingRow = row;
+
+        // Hiện modal chỉnh sửa
+        document.getElementById('editMedicineModal').style.display = 'block';
+      }
+
+      function closeEditModal() {
+        document.getElementById('editMedicineModal').style.display = 'none';
+        document.getElementById('editMedicineForm').reset();
+        window.editingRow = null;
+      }
+
+      function updateMedicine() {
+        if (!window.editingRow) return;
+        const medicineCode = document.getElementById('editMedicineCode').value;
+        const medicineName = document.getElementById('editMedicineName').value;
+        const medicineUnit = document.getElementById('editMedicineUnit').value;
+        const importPrice = document.getElementById('editImportPrice').value;
+        const salePrice = document.getElementById('editSalePrice').value;
+        const addDate = document.getElementById('editAddDate').value;
+        const minQuantity = document.getElementById('editMinQuantity').value;
+        const expiryDate = document.getElementById('editExpiryDate').value;
+        const batchCode = document.getElementById('editBatchCode').value;
+        const imageFile = document.getElementById('editMedicineImage').files[0];
+        if (!medicineCode || !medicineName || !medicineUnit || !importPrice || !salePrice) {
+          alert('Vui lòng điền đầy đủ thông tin bắt buộc!');
+          return;
+        }
+        const formData = new FormData();
+        formData.append('ma_thuoc', medicineCode.replace('#', '').trim());
+        formData.append('ten_thuoc', medicineName);
+        formData.append('don_vi', medicineUnit);
+        formData.append('gia_nhap', importPrice);
+        formData.append('gia_ban', salePrice);
+        formData.append('ngay_them', addDate);
+        formData.append('sl_toi_thieu', minQuantity || 10);
+        if (imageFile) formData.append('anh', imageFile);
+        formData.append('han_su_dung', expiryDate);
+        formData.append('ma_lo', batchCode);
+        // Nếu có các trường ngày nhập, số lượng lô thì gửi thêm
+        if (document.getElementById('editSoLuongLo')) formData.append('so_luong', document.getElementById('editSoLuongLo').value);
+        if (document.getElementById('editAddDate')) formData.append('ngay_nhap', document.getElementById('editAddDate').value);
+        fetch('./backend/api/thuoc/update.php', {
+          method: 'POST',
+          body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.message && data.message.includes('thành công')) {
+            alert('Đã cập nhật thuốc thành công!');
+            closeEditModal();
+            loadMedicineData();
+          } else {
+            alert('Lỗi khi cập nhật thuốc: ' + (data.message || 'Không rõ nguyên nhân'));
+          }
+        })
+        .catch(err => {
+          alert('Lỗi khi cập nhật thuốc: ' + err.message);
+        });
+      }
+
+      function deleteMedicine(button) {
+        if (confirm('Bạn có chắc chắn muốn xóa thuốc này?')) {
+          const row = button.closest('tr');
+          const maThuoc = row.cells[1].textContent.replace('#', '').trim();
+          fetch('./backend/api/thuoc/delete.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ma_thuoc: maThuoc })
+          })
+          .then(res => res.json())
+          .then(data => {
+            if (data.message && data.message.includes('thành công')) {
+              alert('Đã xóa thuốc thành công!');
+              loadMedicineData();
+            } else {
+              alert('Lỗi khi xóa thuốc: ' + (data.message || 'Không rõ nguyên nhân'));
+            }
+          })
+          .catch(err => {
+            alert('Lỗi khi xóa thuốc: ' + err.message);
+          });
+        }
+      }
+    });
+  </script>
 </html>

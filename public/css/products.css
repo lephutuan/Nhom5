@@ -9,7 +9,12 @@ body {
   min-height: 100vh;
   background-color: #f4f7fa;
 }
-
+h1{
+  font-size: 2rem;
+  color: #1e40af;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
 /* Navbar Styles */
 .navbar {
   background: #ffffff;
@@ -154,13 +159,39 @@ main {
   width: 200px;
 }
 
+/* Style cho input trong form thêm khách hàng mới */
+#addCustomerForm input[type="text"] {
+  padding: 0.5rem;
+  border: 1.5px solid #a5b4fc;
+  border-radius: 5px;
+  width: 180px;
+  font-size: 1rem;
+  background: #f8fafc;
+  transition: border 0.2s;
+}
+#addCustomerForm input[type="text"]:focus {
+  border: 1.5px solid #6366f1;
+  outline: none;
+  background: #fff;
+}
+
+/* Style cho vùng hiển thị thông tin khách hàng */
 .customer-info {
   margin-top: 1rem;
   background: #f3f4f6;
-  padding: 1rem;
-  border-radius: 5px;
+  padding: 1.2rem 1rem;
+  border-radius: 7px;
   width: 100%;
-  font-size: 0.95rem;
+  font-size: 1rem;
+  color: #1e293b;
+  box-shadow: 0 2px 8px rgba(100, 116, 139, 0.07);
+}
+.customer-details p {
+  margin-bottom: 0.3rem;
+  font-size: 1rem;
+}
+.customer-details strong {
+  color: #1e40af;
 }
 
 .medicine-table {

@@ -18,9 +18,29 @@ class Thuoc {
     public $gia_ban;
     public $ngay_them;
     public $sl_toi_thieu;
+    public $anh;
 
     public function __construct($db) {
         $this->conn = $db;
+    }
+
+    // Lấy tất cả thuốc với thông tin lô (1 lô mới nhất cho mỗi thuốc)
+    public function readWithLot() {
+        $query = "SELECT t.*, l.ma_lo, l.han_su_dung, l.trang_thai 
+                  FROM " . $this->table_name . " t 
+                  LEFT JOIN (
+                      SELECT ma_thuoc, ma_lo, han_su_dung, trang_thai
+                      FROM LO_THUOC 
+                      WHERE (ma_thuoc, ma_lo) IN (
+                          SELECT ma_thuoc, MAX(ma_lo) 
+                          FROM LO_THUOC 
+                          GROUP BY ma_thuoc
+                      )
+                  ) l ON t.ma_thuoc = l.ma_thuoc 
+                  ORDER BY t.ma_thuoc DESC";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt;
     }
 
     // Lấy tất cả thuốc
@@ -55,10 +75,8 @@ class Thuoc {
     public function create() {
         $query = "INSERT INTO " . $this->table_name . " 
                 SET ten_thuoc=:ten_thuoc, don_vi=:don_vi, gia_nhap=:gia_nhap, 
-                    gia_ban=:gia_ban, ngay_them=:ngay_them, sl_toi_thieu=:sl_toi_thieu";
-        
+                    gia_ban=:gia_ban, ngay_them=:ngay_them, sl_toi_thieu=:sl_toi_thieu, anh=:anh";
         $stmt = $this->conn->prepare($query);
-        
         // Làm sạch dữ liệu
         $this->ten_thuoc = htmlspecialchars(strip_tags($this->ten_thuoc));
         $this->don_vi = htmlspecialchars(strip_tags($this->don_vi));
@@ -66,7 +84,7 @@ class Thuoc {
         $this->gia_ban = htmlspecialchars(strip_tags($this->gia_ban));
         $this->ngay_them = htmlspecialchars(strip_tags($this->ngay_them));
         $this->sl_toi_thieu = htmlspecialchars(strip_tags($this->sl_toi_thieu));
-        
+        $this->anh = htmlspecialchars(strip_tags($this->anh));
         // Bind các giá trị
         $stmt->bindParam(":ten_thuoc", $this->ten_thuoc);
         $stmt->bindParam(":don_vi", $this->don_vi);
@@ -74,7 +92,7 @@ class Thuoc {
         $stmt->bindParam(":gia_ban", $this->gia_ban);
         $stmt->bindParam(":ngay_them", $this->ngay_them);
         $stmt->bindParam(":sl_toi_thieu", $this->sl_toi_thieu);
-        
+        $stmt->bindParam(":anh", $this->anh);
         if($stmt->execute()) {
             return true;
         }
