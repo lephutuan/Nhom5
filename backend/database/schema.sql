@@ -120,9 +120,6 @@ INSERT INTO THUOC (ten_thuoc, don_vi, gia_nhap, gia_ban, ngay_them, sl_toi_thieu
 ('Amoxicillin 500mg', 'Viên', 1500, 2500, '2024-01-01', 30, 'amoxicillin.jpg'),
 ('Efferalgan 500mg', 'Viên', 3000, 4500, '2024-01-01', 40, 'efferalgan.jpg'),
 ('Vitamin C 1000mg', 'Viên', 1000, 1500, '2024-01-01', 60, 'vitamin_c.jpg'),
-=======
-('Vitamin C 1000mg', 'Viên', 1000, 1500, '2024-01-01', 60, 'vitamin-c.jpjpg'),
->>>>>>> a09d235e15599725914713fdb356ff8184b246a7
 ('Omeprazole 20mg', 'Viên', 5000, 7500, '2024-01-01', 25, 'omeprazole.jpg'),
 ('Silkron Cream', 'Tuýp', 12000, 18000, '2024-06-01', 20, 'silkron.jpg'),
 ('Betadine 10%', 'Chai', 25000, 35000, '2024-06-01', 15, 'betadine.jpg'),
