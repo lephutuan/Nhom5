@@ -1,5 +1,5 @@
-// API Base URL
-const API_BASE_URL = 'http://localhost/Nhom5_demo/backend/api';
+// API Base URL - Dynamic configuration
+const API_BASE_URL = CONFIG ? CONFIG.getApiBaseUrl() : './backend/api';
 
 // API Helper Class
 class API {
@@ -126,6 +126,18 @@ class API {
     static async deleteDonThuoc(ma_don) {
         return await this.request(`/donthuoc/delete.php?id=${ma_don}`, {
             method: 'DELETE'
+        });
+    }
+
+    // Chi tiết đơn thuốc APIs
+    static async getChiTietDonThuoc(ma_don) {
+        return await this.request(`/chi-tiet-don-thuoc/read.php?ma_don=${ma_don}`);
+    }
+
+    static async createChiTietDonThuoc(chiTietData) {
+        return await this.request('/chi-tiet-don-thuoc/create.php', {
+            method: 'POST',
+            body: JSON.stringify(chiTietData)
         });
     }
 }
@@ -367,8 +379,41 @@ async function deleteThuoc(ma_thuoc) {
     }
 }
 
+// CRUD Functions for NhanVien
+async function createNhanVien() {
+    const formData = {
+        ten_nv: document.getElementById('ten_nv').value,
+        chuc_vu: document.getElementById('chuc_vu').value,
+        sdt: document.getElementById('sdt').value,
+        dia_chi: document.getElementById('dia_chi').value,
+        trang_thai: document.getElementById('trang_thai').value
+    };
+
+    try {
+        await API.createNhanVien(formData);
+        UI.showMessage('Thêm nhân viên thành công', 'success');
+        loadNhanVienData();
+    } catch (error) {
+        UI.showMessage('Lỗi khi thêm nhân viên: ' + error.message, 'error');
+    }
+}
+
+async function deleteNhanVien(ma_nv) {
+    if (!UI.confirmDelete()) return;
+
+    try {
+        await API.deleteNhanVien(ma_nv);
+        UI.showMessage('Xóa nhân viên thành công', 'success');
+        loadNhanVienData();
+    } catch (error) {
+        UI.showMessage('Lỗi khi xóa nhân viên: ' + error.message, 'error');
+    }
+}
+
 // Export for use in HTML
 window.API = API;
 window.UI = UI;
 window.createThuoc = createThuoc;
-window.deleteThuoc = deleteThuoc; 
+window.deleteThuoc = deleteThuoc;
+window.createNhanVien = createNhanVien;
+window.deleteNhanVien = deleteNhanVien; 

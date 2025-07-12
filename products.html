@@ -50,15 +50,27 @@
     <main>
     <h1>Đơn thuốc</h1>
 
-    <!-- 1. Thông tin khách hàng -->
+    <!-- 1. Thông tin khách hàng và nhân viên -->
     <section class="form-section">
-      <h2>Thông tin khách hàng</h2>
+      <h2>Thông tin khách hàng và nhân viên</h2>
       <div class="customer-form">
-        <select id="customerSelect">
-          <option value="">-- Chọn khách hàng --</option>
-          <!-- Các option sẽ được render từ JS -->
-        </select>
-        <button class="btn btn-secondary" id="btnAddCustomer">+ Thêm khách hàng mới</button>
+        <div style="margin-bottom: 15px;">
+          <label for="customerSelect" style="display: block; margin-bottom: 5px; font-weight: bold;">Khách hàng:</label>
+          <select id="customerSelect">
+            <option value="">-- Chọn khách hàng --</option>
+            <!-- Các option sẽ được render từ JS -->
+          </select>
+          <button class="btn btn-secondary" id="btnAddCustomer">+ Thêm khách hàng mới</button>
+        </div>
+        
+        <div style="margin-bottom: 15px;">
+          <label for="employeeSelect" style="display: block; margin-bottom: 5px; font-weight: bold;">Nhân viên thực hiện:</label>
+          <select id="employeeSelect">
+            <option value="">-- Chọn nhân viên --</option>
+            <!-- Các option sẽ được render từ JS -->
+          </select>
+        </div>
+        
         <!-- Form thêm khách hàng mới, ẩn mặc định -->
         <div id="addCustomerForm" style="display:none; gap: 8px; align-items: center; margin-top: 8px;">
           <input type="text" id="newCustomerName" placeholder="Tên khách hàng" style="width: 180px;" />
@@ -67,6 +79,7 @@
           <button class="btn btn-primary" id="btnSaveCustomer"><i class="fa fa-save"></i> Lưu</button>
           <button class="btn btn-danger" id="btnCancelAddCustomer"><i class="fa fa-times"></i> Hủy</button>
         </div>
+        
         <div class="customer-info" id="customerInfo">
           <!-- Tên, sđt, dị ứng sẽ hiển thị tại đây -->
         </div>
@@ -115,13 +128,16 @@
   </body>
   <script src="./public/js/navbar.js"></script>
   <script src="./public/js/sidebar.js"></script>
+  <script src="./backend/public/js/config.js"></script>
   <script src="./backend/public/js/api.js"></script>
   <script>
     // Khởi tạo dữ liệu
     let thuocList = [];
     let khachHangList = [];
+    let nhanVienList = [];
     let selectedMedicines = [];
     let selectedCustomer = null;
+    let selectedEmployee = null;
 
     // Load dữ liệu khi trang load
     document.addEventListener('DOMContentLoaded', async function() {
@@ -134,15 +150,18 @@
       try {
         UI.showLoading();
         
-        const [thuocData, khachHangData] = await Promise.all([
+        const [thuocData, khachHangData, nhanVienData] = await Promise.all([
           API.getThuoc(),
-          API.getKhachHang()
+          API.getKhachHang(),
+          API.getNhanVien()
         ]);
 
         thuocList = thuocData.records;
         khachHangList = khachHangData.records;
+        nhanVienList = nhanVienData.records;
 
         populateCustomerSelect();
+        populateEmployeeSelect();
         setupMedicineSearch();
         
       } catch (error) {
@@ -161,6 +180,19 @@
         const option = document.createElement('option');
         option.value = kh.ma_kh;
         option.textContent = `${kh.ten_kh} - ${kh.sdt}`;
+        select.appendChild(option);
+      });
+    }
+
+    // Populate employee select
+    function populateEmployeeSelect() {
+      const select = document.getElementById('employeeSelect');
+      select.innerHTML = '<option value="">-- Chọn nhân viên --</option>';
+      
+      nhanVienList.forEach(nv => {
+        const option = document.createElement('option');
+        option.value = nv.ma_nv;
+        option.textContent = `${nv.ten_nv} - ${nv.chuc_vu}`;
         select.appendChild(option);
       });
     }
@@ -194,6 +226,16 @@
         } else {
           selectedCustomer = null;
           document.getElementById('customerInfo').innerHTML = '';
+        }
+      });
+
+      // Employee select change
+      document.getElementById('employeeSelect').addEventListener('change', function() {
+        const maNv = this.value;
+        if (maNv) {
+          selectedEmployee = nhanVienList.find(nv => nv.ma_nv == maNv);
+        } else {
+          selectedEmployee = null;
         }
       });
 
@@ -272,6 +314,8 @@
       `;
     }
 
+
+
     // Add medicine to prescription
     function addMedicine() {
       const searchInput = document.getElementById('medicineSearch');
@@ -345,6 +389,11 @@
         return;
       }
 
+      if (!selectedEmployee) {
+        UI.showMessage('Vui lòng chọn nhân viên thực hiện', 'error');
+        return;
+      }
+
       if (selectedMedicines.length === 0) {
         UI.showMessage('Vui lòng thêm ít nhất một loại thuốc', 'error');
         return;
@@ -356,7 +405,7 @@
         // Tạo đơn thuốc
         const donThuocData = {
           ma_kh: selectedCustomer.ma_kh,
-          ma_nv: 1, // Tạm thời hardcode, sau này sẽ lấy từ session
+          ma_nv: selectedEmployee.ma_nv,
           ngay_tao: new Date().toISOString().slice(0, 19).replace('T', ' '),
           da_thanh_toan: 'Chưa thanh toán'
         };
@@ -364,6 +413,19 @@
         const response = await API.createDonThuoc(donThuocData);
         
         if (response.ma_don) {
+          // Tạo chi tiết đơn thuốc
+          const chiTietData = {
+            ma_don: response.ma_don,
+            chi_tiet_list: selectedMedicines.map(medicine => ({
+              ma_thuoc: medicine.ma_thuoc,
+              lieu_luong: medicine.lieu_luong,
+              so_ngay: medicine.so_ngay,
+              so_luong: medicine.so_luong
+            }))
+          };
+
+          await API.createChiTietDonThuoc(chiTietData);
+          
           UI.showMessage('Đơn thuốc đã được tạo thành công!', 'success');
           resetForm();
         }
@@ -385,8 +447,10 @@
     // Reset form
     function resetForm() {
       selectedCustomer = null;
+      selectedEmployee = null;
       selectedMedicines = [];
       document.getElementById('customerSelect').value = '';
+      document.getElementById('employeeSelect').value = '';
       document.getElementById('customerInfo').innerHTML = '';
       document.getElementById('medicineList').innerHTML = '';
       clearMedicineForm();

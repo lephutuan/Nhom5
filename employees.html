@@ -75,7 +75,7 @@
       <!-- Danh sách -->
       <section class="form-section">
         <h2>Danh sách nhân viên</h2>
-        <table class="employee-table">
+        <table id="nhanvien-table" class="employee-table">
           <thead>
             <tr>
               <th>STT</th>
@@ -87,7 +87,7 @@
               <th>Hành động</th>
             </tr>
           </thead>
-          <tbody id="employeeTableBody">
+          <tbody>
             <!-- Dữ liệu sẽ được load từ API -->
           </tbody>
         </table>
@@ -96,6 +96,7 @@
   </body>
   <script src="./public/js/navbar.js"></script>
   <script src="./public/js/sidebar.js"></script>
+  <script src="./backend/public/js/config.js"></script>
   <script src="./backend/public/js/api.js"></script>
   <script>
     let employees = [];
@@ -122,7 +123,7 @@
 
     // Hiển thị danh sách nhân viên
     function displayEmployees() {
-      const tbody = document.getElementById('employeeTableBody');
+      const tbody = document.querySelector('#nhanvien-table tbody');
       tbody.innerHTML = '';
 
       employees.forEach((employee, index) => {

@@ -94,6 +94,7 @@
   </body>
   <script src="./public/js/navbar.js"></script>
   <script src="./public/js/sidebar.js"></script>
+  <script src="./backend/public/js/config.js"></script>
   <script src="./backend/public/js/api.js"></script>
   <script>
     let donThuocList = [];
@@ -101,6 +102,9 @@
 
     // Load dữ liệu khi trang load
     document.addEventListener('DOMContentLoaded', async function() {
+      // Hiển thị dropdown ngay từ đầu
+      displayDonThuocSelect();
+      // Sau đó load dữ liệu
       await loadDonThuoc();
     });
 
@@ -110,15 +114,17 @@
         UI.showLoading();
         const data = await API.getDonThuoc();
         donThuocList = data.records.filter(don => don.da_thanh_toan === 'Chưa thanh toán');
-        displayDonThuocSelect();
+        updateDonThuocSelect();
       } catch (error) {
         UI.showMessage('Lỗi khi tải danh sách đơn thuốc: ' + error.message, 'error');
+        // Vẫn cập nhật dropdown ngay cả khi có lỗi
+        updateDonThuocSelect();
       } finally {
         UI.hideLoading();
       }
     }
 
-    // Hiển thị select đơn thuốc
+    // Hiển thị select đơn thuốc (luôn xuất hiện)
     function displayDonThuocSelect() {
       const container = document.querySelector('.invoice-details');
       const selectHtml = `
@@ -126,14 +132,37 @@
           <label for="donThuocSelect">Chọn đơn thuốc:</label>
           <select id="donThuocSelect" onchange="loadDonThuocDetails()">
             <option value="">-- Chọn đơn thuốc --</option>
-            ${donThuocList.map(don => `
-              <option value="${don.ma_don}">Đơn #${don.ma_don} - ${don.ten_kh}</option>
-            `).join('')}
           </select>
         </div>
       `;
       
       container.innerHTML = selectHtml + container.innerHTML;
+    }
+
+    // Cập nhật nội dung select đơn thuốc
+    function updateDonThuocSelect() {
+      const select = document.getElementById('donThuocSelect');
+      if (!select) return;
+
+      // Giữ lại option đầu tiên
+      select.innerHTML = '<option value="">-- Chọn đơn thuốc --</option>';
+      
+      // Thêm các đơn thuốc nếu có
+      if (donThuocList.length > 0) {
+        donThuocList.forEach(don => {
+          const option = document.createElement('option');
+          option.value = don.ma_don;
+          option.textContent = `Đơn #${don.ma_don} - ${don.ten_kh}`;
+          select.appendChild(option);
+        });
+      } else {
+        // Thêm thông báo khi không có đơn thuốc
+        const option = document.createElement('option');
+        option.value = "";
+        option.textContent = "-- Không có đơn thuốc chưa thanh toán --";
+        option.disabled = true;
+        select.appendChild(option);
+      }
     }
 
     // Load chi tiết đơn thuốc
@@ -146,51 +175,75 @@
 
       selectedDonThuoc = donThuocList.find(don => don.ma_don == maDon);
       if (selectedDonThuoc) {
-        updateInvoiceDetails();
+        try {
+          UI.showLoading();
+          // Lấy chi tiết thuốc từ database
+          const chiTietData = await API.getChiTietDonThuoc(maDon);
+          selectedDonThuoc.chi_tiet = chiTietData.records;
+          updateInvoiceDetails();
+        } catch (error) {
+          UI.showMessage('Lỗi khi tải chi tiết đơn thuốc: ' + error.message, 'error');
+        } finally {
+          UI.hideLoading();
+        }
       }
     }
 
     // Cập nhật thông tin hóa đơn
     function updateInvoiceDetails() {
       const detailsDiv = document.querySelector('.invoice-details');
-      detailsDiv.innerHTML = `
+      
+      // Giữ lại dropdown, chỉ cập nhật thông tin chi tiết
+      const dropdownHtml = detailsDiv.querySelector('.don-thuoc-select').outerHTML;
+      detailsDiv.innerHTML = dropdownHtml + `
         <p>Mã đơn: #${selectedDonThuoc.ma_don}</p>
         <p>Khách hàng: ${selectedDonThuoc.ten_kh}</p>
         <p>Nhân viên: ${selectedDonThuoc.ten_nv}</p>
         <p>Ngày tạo: ${UI.formatDate(selectedDonThuoc.ngay_tao)}</p>
       `;
 
-      // Tạm thời hiển thị dữ liệu mẫu cho thuốc
+      // Hiển thị danh sách thuốc
       displayInvoiceItems();
     }
 
     // Hiển thị danh sách thuốc trong hóa đơn
     function displayInvoiceItems() {
       const tbody = document.querySelector('.invoice-table tbody');
-      // Tạm thời sử dụng dữ liệu mẫu
-      tbody.innerHTML = `
-        <tr>
-          <td>Paracetamol 500mg</td>
-          <td>2</td>
-          <td>3.000đ</td>
-          <td>6.000đ</td>
-        </tr>
-        <tr>
-          <td>Amoxicillin 500mg</td>
-          <td>1</td>
-          <td>2.500đ</td>
-          <td>2.500đ</td>
-        </tr>
-      `;
+      
+      if (!selectedDonThuoc.chi_tiet || selectedDonThuoc.chi_tiet.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align: center;">Không có thuốc nào</td></tr>';
+        document.querySelector('.total-amount').textContent = 'TỔNG CỘNG: 0đ';
+        return;
+      }
+
+      let totalAmount = 0;
+      tbody.innerHTML = '';
+
+      selectedDonThuoc.chi_tiet.forEach(chiTiet => {
+        const thanhTien = chiTiet.so_luong * chiTiet.gia_ban;
+        totalAmount += thanhTien;
+        
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${chiTiet.ten_thuoc}</td>
+          <td>${chiTiet.so_luong} ${chiTiet.don_vi}</td>
+          <td>${UI.formatCurrency(chiTiet.gia_ban)}</td>
+          <td>${UI.formatCurrency(thanhTien)}</td>
+        `;
+        tbody.appendChild(row);
+      });
 
       // Cập nhật tổng tiền
-      document.querySelector('.total-amount').textContent = 'TỔNG CỘNG: 8.500đ';
+      document.querySelector('.total-amount').textContent = `TỔNG CỘNG: ${UI.formatCurrency(totalAmount)}`;
     }
 
     // Xóa thông tin hóa đơn
     function clearInvoiceDetails() {
       const detailsDiv = document.querySelector('.invoice-details');
-      detailsDiv.innerHTML = `
+      
+      // Giữ lại dropdown, chỉ xóa thông tin chi tiết
+      const dropdownHtml = detailsDiv.querySelector('.don-thuoc-select').outerHTML;
+      detailsDiv.innerHTML = dropdownHtml + `
         <p>Mã đơn: --</p>
         <p>Khách hàng: --</p>
         <p>Nhân viên: --</p>
@@ -227,6 +280,12 @@
         // Reload danh sách đơn thuốc
         await loadDonThuoc();
         clearInvoiceDetails();
+        
+        // Reset dropdown về trạng thái ban đầu
+        const select = document.getElementById('donThuocSelect');
+        if (select) {
+          select.value = '';
+        }
         
       } catch (error) {
         UI.showMessage('Lỗi khi thanh toán: ' + error.message, 'error');
